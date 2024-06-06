@@ -11,7 +11,8 @@ struct ChannelItemView: View {
     let channel: ChannelItem
     var body: some View {
         HStack(alignment: .top, spacing: 10){
-            Circle()
+           // Circle()
+            CircularProfileImageView(channel, size: .medium)
                 .frame(width: 60, height: 60)
             
             VStack(alignment: .leading, spacing: 3){
