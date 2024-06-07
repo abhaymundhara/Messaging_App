@@ -6,6 +6,7 @@
 //
 import Firebase
 import Foundation
+import Combine
 
 enum ChannelCreationRoute {
     case groupPartnerPicker
@@ -28,7 +29,10 @@ final class ChatPartnerPickerViewModel: ObservableObject {
     @Published private(set) var users = [UserItem]()
     @Published var errorState: (showError: Bool, errorMessage: String) = (false, "Uh Oh!")
     
+    private var subscription: AnyCancellable?
+    
     private var lastCursor: String?
+    private var currentUser: UserItem?
     
     var showSelectedUsers: Bool {
         return !selectedChatPartners.isEmpty
@@ -47,8 +51,27 @@ final class ChatPartnerPickerViewModel: ObservableObject {
     }
     
     init() {
-        Task {
-            await fetchUsers()
+        listenForAuthState()
+       
+    }
+    
+    deinit {
+        subscription?.cancel()
+        subscription = nil
+    }
+    
+    private func listenForAuthState() {
+        subscription = AuthManager.shared.authState.receive(on: DispatchQueue.main).sink {[weak self] authState in
+            switch authState {
+                
+            case .loggedIn(let loggedInUser):
+                self?.currentUser = loggedInUser
+                Task {
+                    await self?.fetchUsers()
+                }
+            default:
+                break
+            }
         }
     }
     
@@ -102,6 +125,10 @@ final class ChatPartnerPickerViewModel: ObservableObject {
                 var channelDict = snapshot.value as! [String: Any]
                 var directChannel = ChannelItem(channelDict)
                 directChannel.members = selectedChatPartners
+                if let currentUser {
+                    directChannel.members.append(currentUser)
+                }
+                
                 completion(directChannel)
             } else {
                 let channelCreation = createChannel(nil)
@@ -194,9 +221,11 @@ final class ChatPartnerPickerViewModel: ObservableObject {
         
         var newChannelItem = ChannelItem(channelDict)
          newChannelItem.members = selectedChatPartners
+         if let currentUser {
+             newChannelItem.members.append(currentUser)
+         }
         return .success(newChannelItem)
         
-//        FirebaseConstants.MessagesRef.child(channelId).child(messageId).setValue(<#T##value: Any?##Any?#>)
     }
 }
 
