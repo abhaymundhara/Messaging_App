@@ -24,22 +24,22 @@ struct NewGroupSetUpScreen: View {
             }
             
             Section {
-                SelectedChatPartnerView(users: viewModel.selectedChatPartners) {
-                    user in
+                SelectedChatPartnerView(users: viewModel.selectedChatPartners) { user in
                     viewModel.handleItemSelection(user)
                 }
             } header: {
                 let count = viewModel.selectedChatPartners.count
-                let maxCount = ChannelConstants.maxGroupParticipants
+                let maxCount = ChannelContants.maxGroupParticipants
+                                
                 Text("Participants: \(count) of \(maxCount)")
                     .bold()
             }
             .listRowBackground(Color.clear)
+
         }
-        
         .navigationTitle("New Group")
         .toolbar {
-            trailingNavItem()
+            trailNavItem()
         }
     }
     
@@ -63,18 +63,17 @@ struct NewGroupSetUpScreen: View {
             ZStack {
                 Image(systemName: "camera.fill")
                     .imageScale(.large)
-                    .foregroundStyle(.whatsAppBlack)
             }
             .frame(width: 60, height: 60)
             .background(Color(.systemGray6))
-            .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
+            .clipShape(Circle())
         }
     }
     
     @ToolbarContentBuilder
-    private func trailingNavItem() -> some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing){
-            Button("Create"){
+    private func trailNavItem() -> some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button("Create") {
                 viewModel.createGroupChannel(channelName, completion: onCreate)
             }
             .bold()
@@ -84,7 +83,7 @@ struct NewGroupSetUpScreen: View {
 }
 
 #Preview {
-    NavigationStack{
+    NavigationStack {
         NewGroupSetUpScreen(viewModel: ChatPartnerPickerViewModel()) { _ in
             
         }

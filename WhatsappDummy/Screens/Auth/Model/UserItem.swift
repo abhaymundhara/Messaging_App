@@ -19,23 +19,24 @@ struct UserItem: Identifiable, Hashable, Decodable {
     }
     
     var bioUnwrapped: String {
-        return bio ?? "Hey there!"
+        return bio ?? "Hey there! I am using WhatsApp."
     }
     
-    static let placeholder = UserItem(uid: "1", username: "abhay", email: "am@gmail.com")
+    static let placeholder = UserItem(uid: "1", username: "Osas", email: "askswiftskool@gmail.com")
     
     static let placeholders: [UserItem] = [
-        UserItem(uid: "1", username: "abhay", email: "am@gmail.com"),
-        UserItem(uid: "2", username: "john", email: "john.doe@gmail.com", bio: "hey there"),
-        UserItem(uid: "3", username: "jane", email: "jane.doe@gmail.com", bio: "hey there"),
-        UserItem(uid: "4", username: "alice", email: "alice.smith@gmail.com", bio: "hey there"),
-        UserItem(uid: "5", username: "bob", email: "bob.johnson@gmail.com", bio: "hey there"),
-        UserItem(uid: "6", username: "charlie", email: "charlie.brown@gmail.com", bio: "hey there"),
-        UserItem(uid: "7", username: "dave", email: "dave.williams@gmail.com", bio: "hey there"),
-        UserItem(uid: "8", username: "eva", email: "eva.jones@gmail.com", bio: "hey there"),
-        UserItem(uid: "9", username: "frank", email: "frank.miller@gmail.com", bio: "hey there"),
-        UserItem(uid: "10", username: "grace", email: "grace.davis@gmail.com", bio: "hey there")
+        UserItem(uid: "1", username: "Osas", email: "osask@yahoo.com"),
+        UserItem(uid: "2", username: "JohnDoe", email: "johndoe@example.com", bio: "Hello, I'm John."),
+        UserItem(uid: "3", username: "JaneSmith", email: "janesmith@example.com", bio: "Passionate about coding."),
+        UserItem(uid: "4", username: "Alice", email: "alice@gmail.com", bio: "Tech enthusiast."),
+        UserItem(uid: "5", username: "Bob", email: "bob@example.com", bio: "Lover of nature."),
+        UserItem(uid: "6", username: "Ella", email: "ella@hotmail.com", bio: "Dreamer."),
+        UserItem(uid: "7", username: "Michael", email: "michael@gmail.com"),
+        UserItem(uid: "8", username: "Sophie", email: "sophie@example.com", bio: "Coffee addict ☕"),
+        UserItem(uid: "9", username: "David", email: "david@example.com", bio: "Music lover."),
+        UserItem(uid: "10", username: "Emily", email: "emily@yahoo.com", bio: "Travel enthusiast.")
     ]
+
 }
 
 extension UserItem {
@@ -43,11 +44,10 @@ extension UserItem {
         self.uid = dictionary[.uid] as? String ?? ""
         self.username = dictionary[.username] as? String ?? ""
         self.email = dictionary[.email] as? String ?? ""
-        self.bio = dictionary[.bio] as? String ?? nil
-        self.profileImageUrl = dictionary[.profileImageUrl] as? String ?? nil
+        self.bio = dictionary[.bio] as? String? ?? nil
+        self.profileImageUrl = dictionary[.profileImageUrl] as? String? ?? nil
     }
 }
-
 
 extension String {
     static let uid = "uid"
@@ -56,3 +56,4 @@ extension String {
     static let bio = "bio"
     static let profileImageUrl = "profileImageUrl"
 }
+

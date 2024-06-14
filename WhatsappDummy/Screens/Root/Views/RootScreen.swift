@@ -16,10 +16,10 @@ struct RootScreen: View {
             ProgressView()
                 .controlSize(.large)
             
-        case.loggedIn(let loggedInUser):
+        case .loggedIn(let loggedInUser):
             MainTabView(loggedInUser)
             
-        case.loggedOut:
+        case .loggedOut:
             LoginScreen()
         }
     }

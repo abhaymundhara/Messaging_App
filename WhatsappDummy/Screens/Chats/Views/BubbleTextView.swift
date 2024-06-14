@@ -9,42 +9,45 @@ import SwiftUI
 
 struct BubbleTextView: View {
     let item: MessageItem
+    
     var body: some View {
-        VStack(alignment: item.horizontalAlignment, spacing: 3) {
+        HStack(alignment: .bottom, spacing: 5) {
+            if item.showGroupPartnerInfo {
+                CircularProfileImageView(item.sender?.profileImageUrl, size: .mini)
+            }
+            
+            if item.direction == .sent {
+                timeStampTextView()
+            }
+            
             Text(item.text)
                 .padding(10)
                 .background(item.backgroundColor)
                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 .applyTail(item.direction)
             
-            timeStampTextView()
+            if item.direction == .received {
+                timeStampTextView()
+            }
         }
         .shadow(color: Color(.systemGray3).opacity(0.1), radius: 5, x: 0, y: 20)
         .frame(maxWidth: .infinity, alignment: item.alignment)
-        .padding(.leading, item.direction == .recieved ? 5 : 100 )
-        .padding(.trailing, item.direction == .recieved ? 100 : 5)
+        .padding(.leading, item.leadingPadding)
+        .padding(.trailing, item.trailingPadding)
     }
     
     private func timeStampTextView() -> some View {
-        HStack {
-            Text(item.timeStamp.formatToTime)
-                .foregroundStyle(.gray)
-                .font(.system(size: 13))
-            if(item.direction == .sent){
-                Image(.seen)
-                    .resizable()
-                    .renderingMode(/*@START_MENU_TOKEN@*/.template/*@END_MENU_TOKEN@*/)
-                    .frame(width:15, height: 15)
-                    .foregroundStyle(Color(.systemBlue))
-            }
-        }
+        Text(item.timeStamp.formatToTime)
+            .font(.footnote)
+            .foregroundStyle(.gray)
     }
 }
 
 #Preview {
-    ScrollView{
+    ScrollView {
         BubbleTextView(item: .sentPlaceholder)
         BubbleTextView(item: .receivedPlaceholder)
+
     }
     .frame(maxWidth: .infinity)
     .background(Color.gray.opacity(0.4))

@@ -12,7 +12,6 @@ enum AdminMessageType: String {
     case memberAdded
     case memberLeft
     case channelNameChanged
-    
 }
 
 enum MessageType {
@@ -22,45 +21,55 @@ enum MessageType {
         switch self {
         case .admin:
             return "admin"
+            
         case .text:
             return "text"
+            
         case .photo:
             return "photo"
+
         case .video:
-            return "vidoe"
+            return "video"
+
         case .audio:
             return "audio"
+
         }
     }
     
     init?(_ stringValue: String) {
         switch stringValue {
-        case .text: 
+        case "text":
             self = .text
+            
         case "photo":
             self = .photo
+            
         case "video":
             self = .video
+            
         case "audio":
             self = .audio
+            
         default:
             if let adminMessageType = AdminMessageType(rawValue: stringValue) {
                 self = .admin(adminMessageType)
-            }
-            else {
+            } else {
                 return nil
             }
         }
     }
+    
 }
 
 extension MessageType: Equatable {
     static func ==(lhs: MessageType, rhs: MessageType) -> Bool {
-        switch (lhs, rhs) {
-        case(.admin(let leftAdmin), .admin(let rightAdmin)):
+        switch(lhs, rhs) {
+            
+        case (.admin(let leftAdmin), .admin(let rightAdmin)):
             return leftAdmin == rightAdmin
             
-        case(.text, .text),
+        case (.text, .text),
             (.photo, .photo),
             (.video, .video),
             (.audio, .audio):
@@ -68,15 +77,14 @@ extension MessageType: Equatable {
             
         default:
             return false
-            
         }
     }
 }
 
 enum MessageDirection {
-    case sent, recieved
+    case sent, received
     
     static var random: MessageDirection {
-        return[MessageDirection.sent, .recieved].randomElement() ?? .sent
+        return [MessageDirection.sent, .received].randomElement() ?? .sent
     }
 }

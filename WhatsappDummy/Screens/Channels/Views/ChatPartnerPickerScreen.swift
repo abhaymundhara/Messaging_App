@@ -32,24 +32,29 @@ struct ChatPartnerPickerScreen: View {
                             }
                     }
                 } header: {
-                    Text("Contact List")
+                    Text("Contacts on WhatsApp")
                         .textCase(nil)
                         .bold()
                 }
-                if viewModel.isPaginable{
+                
+                if viewModel.isPaginatable {
                     loadMoreUsersView()
                 }
             }
-            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search name")
+            .searchable(
+                text: $searchText,
+                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: "Search name or number"
+            )
             .navigationTitle("New Chat")
-            .navigationDestination(for: ChannelCreationRoute.self){
-                route in
+            .navigationDestination(for: ChannelCreationRoute.self) { route in
                 destinationView(for: route)
             }
             .navigationBarTitleDisplayMode(.inline)
             .alert(isPresented: $viewModel.errorState.showError) {
-                Alert (
-                    title: Text("Uh oh😟"), message: Text(viewModel.errorState.errorMessage),
+                Alert(
+                    title: Text("Uh Oh😕"),
+                    message: Text(viewModel.errorState.errorMessage),
                     dismissButton: .default(Text("Ok"))
                 )
             }
@@ -64,11 +69,11 @@ struct ChatPartnerPickerScreen: View {
     
     private func loadMoreUsersView() -> some View {
         ProgressView()
-            .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/)
+            .frame(maxWidth: .infinity)
             .listRowBackground(Color.clear)
             .task {
-            await viewModel.fetchUsers()
-        }
+                await viewModel.fetchUsers()
+            }
     }
 }
 
@@ -102,8 +107,7 @@ extension ChatPartnerPickerScreen {
                 .foregroundStyle(.gray)
                 .padding(8)
                 .background(Color(.systemGray5))
-                .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
-            
+                .clipShape(Circle())
         }
     }
 }
@@ -120,40 +124,45 @@ extension ChatPartnerPickerScreen {
                 buttonBody()
             }
         }
+        
         private func buttonBody() -> some View {
             HStack {
                 Image(systemName: item.imageName)
                     .font(.footnote)
                     .frame(width: 40, height: 40)
                     .background(Color(.systemGray6))
-                    .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
+                    .clipShape(Circle())
                 
                 Text(item.title)
-            } .foregroundStyle(.whatsAppBlack)
+            }
         }
     }
 }
 
 enum ChatPartnerPickerOption: String, CaseIterable, Identifiable {
     case newGroup = "New Group"
-    case newContact =  "New Contact"
+    case newContact = "New Contact"
+    case newCommunity = "New Community"
     
     var id: String {
         return rawValue
     }
+    
     var title: String {
         return rawValue
     }
+    
     var imageName: String {
         switch self {
         case .newGroup:
             return "person.2.fill"
         case .newContact:
             return "person.fill.badge.plus"
+        case .newCommunity:
+            return "person.3.fill"
         }
     }
 }
-
 
 #Preview {
     ChatPartnerPickerScreen { channel in

@@ -24,7 +24,6 @@ struct UserService {
                 }
             } withCancel: { error in
                 completion(.emptyNode)
-                
             }
         }
     }
@@ -54,13 +53,13 @@ struct UserService {
             let userNode = UserNode(users: filteredUsers, currentCursor: first.key)
             return userNode
         }
+        
         return .emptyNode
     }
-    
-    
-    struct UserNode {
-        var users: [UserItem]
-        var currentCursor: String?
-        static let emptyNode = UserNode(users: [], currentCursor: nil)
-    }
+}
+
+struct UserNode {
+    var users: [UserItem]
+    var currentCursor: String?
+    static let emptyNode = UserNode(users: [], currentCursor: nil)
 }

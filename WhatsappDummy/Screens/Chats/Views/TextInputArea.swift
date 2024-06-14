@@ -8,19 +8,32 @@
 import SwiftUI
 
 struct TextInputArea: View {
+    @State private var isPulsing = false
     @Binding var textMessage: String
-    let onSendHandler:() -> Void
-    private var disableSendButton: Bool {
-        return textMessage.isEmptyorWhiteSpace
+    @Binding var isRecording: Bool
+    @Binding var elapsedTime: TimeInterval
+    var disableSendButton: Bool
+    let actionHandler:(_ action: UserAction) -> Void
+
+    private var isSendButtonDisabled: Bool {
+        return disableSendButton || isRecording
     }
     
-    @State private var text = ""
     var body: some View {
         HStack(alignment: .bottom, spacing: 5) {
             imagePickerButton()
-                .padding(2)
-            audioPickerButton()
-            messageTextField()
+                .padding(3)
+                .disabled(isRecording)
+                .grayscale(isRecording ? 0.8 : 0)
+            
+            audioRecorderButton()
+            
+            if isRecording {
+                audioSessionIndcatorView()
+            } else {
+                messageTextField()
+            }
+            
             sendMessageButton()
                 .disabled(disableSendButton)
                 .grayscale(disableSendButton ? 0.8 : 0)
@@ -29,13 +42,52 @@ struct TextInputArea: View {
         .padding(.horizontal, 8)
         .padding(.top, 10)
         .background(.whatsAppWhite)
+        .animation(.spring, value: isRecording)
+        .onChange(of: isRecording) { oldValue, isRecording in
+            if isRecording {
+                withAnimation(.easeInOut(duration: 1.5).repeatForever()) {
+                    isPulsing = true
+                }
+            } else {
+                isPulsing = false
+            }
+        }
+    }
+    
+    private func audioSessionIndcatorView() -> some View {
+        HStack {
+            Image(systemName: "circle.fill")
+                .foregroundStyle(.red)
+                .font(.caption)
+                .scaleEffect(isPulsing ? 1.8 : 1.0)
+            
+            Text("Recording Audio")
+                .font(.callout)
+                .lineLimit(1)
+            
+            Spacer()
+            
+            Text(elapsedTime.formatElapsedTime)
+                .font(.callout)
+                .fontWeight(.semibold)
+        }
+        .padding(.horizontal, 8)
+        .frame(height: 30)
+        .frame(maxWidth: .infinity)
+        .clipShape(Capsule())
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(Color.blue.opacity(0.1))
+        )
+        .overlay(textViewBorder())
     }
     
     private func messageTextField() -> some View {
-        TextField("", text: $textMessage    , axis: .vertical)
+        TextField("", text: $textMessage, axis: .vertical)
             .padding(5)
             .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous) .fill(.thinMaterial)
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .fill(.thinMaterial)
             )
             .overlay(textViewBorder())
     }
@@ -47,47 +99,53 @@ struct TextInputArea: View {
     
     
     private func imagePickerButton() -> some View {
-        Button{
-            
+        Button {
+            actionHandler(.presentPhotoPicker)
         } label: {
-            Image(systemName: "photo.on.rectangle").foregroundColor(.whatsAppBlack).imageScale(.large)
+            Image(systemName: "photo.on.rectangle")
+                .font(.system(size: 22))
         }
     }
     
-    
-    private func audioPickerButton() -> some View {
-        Button{
-            
+    private func audioRecorderButton() -> some View {
+        Button {
+            actionHandler(.recordAudio)
         } label: {
-            Image(systemName: "mic.fill")
+            Image(systemName: isRecording ? "square.fill" : "mic.fill")
                 .fontWeight(.heavy)
                 .imageScale(.small)
                 .foregroundStyle(.white)
                 .padding(6)
-                .background(.blue)
-                .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
+                .background(isRecording ? .red : .blue)
+                .clipShape(Circle())
                 .padding(.horizontal, 3)
-            
         }
     }
     
     private func sendMessageButton() -> some View {
-        Button{
-            onSendHandler()
+        Button {
+            actionHandler(.sendMessage)
         } label: {
-            Image(systemName: "paperplane.fill")
+            Image(systemName: "arrow.up")
                 .fontWeight(.heavy)
-                .padding(6)
                 .foregroundStyle(.white)
-                .background(Color(.blue))
-                .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
+                .padding(6)
+                .background(Color.blue)
+                .clipShape(Circle())
         }
     }
-    
+}
+
+extension TextInputArea {
+    enum UserAction {
+        case presentPhotoPicker
+        case sendMessage
+        case recordAudio
+    }
 }
 
 #Preview {
-    TextInputArea(textMessage: .constant("")) {
-        
+    TextInputArea(textMessage: .constant(""), isRecording: .constant(false), elapsedTime: .constant(0), disableSendButton: true) { action in
+        //
     }
 }

@@ -10,6 +10,7 @@ import SwiftUI
 struct SelectedChatPartnerView: View {
     let users: [UserItem]
     let onTapHandler: (_ user: UserItem) -> Void
+    
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
@@ -20,7 +21,7 @@ struct SelectedChatPartnerView: View {
         }
     }
     
-    private func chatPartnerView(_ user : UserItem) -> some View {
+    private func chatPartnerView(_ user: UserItem) -> some View {
         VStack {
             Circle()
                 .fill(.gray)
@@ -33,7 +34,7 @@ struct SelectedChatPartnerView: View {
         }
     }
     
-    private func cancelButton(_ user: UserItem) ->some View {
+    private func cancelButton(_ user: UserItem) -> some View {
         Button {
             onTapHandler(user)
         } label: {
@@ -43,12 +44,13 @@ struct SelectedChatPartnerView: View {
                 .fontWeight(.semibold)
                 .padding(5)
                 .background(Color(.systemGray2))
-                .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
+                .clipShape(Circle())
         }
     }
 }
 
 #Preview {
     SelectedChatPartnerView(users: UserItem.placeholders) { user in
+        
     }
 }

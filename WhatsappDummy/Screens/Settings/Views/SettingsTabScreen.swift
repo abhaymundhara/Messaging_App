@@ -9,28 +9,31 @@ import SwiftUI
 
 struct SettingsTabScreen: View {
     @State private var searchText = ""
+    
     var body: some View {
         NavigationStack {
             List {
-               SettingsHeaderView()
-                Section{
+                
+                SettingsHeaderView()
+                
+                Section {
                     SettingsItemView(item: .broadCastLists)
                     SettingsItemView(item: .starredMessages)
                     SettingsItemView(item: .linkedDevices)
                 }
-                Section{
+                
+                Section {
                     SettingsItemView(item: .account)
                     SettingsItemView(item: .privacy)
                     SettingsItemView(item: .chats)
                     SettingsItemView(item: .notifications)
                     SettingsItemView(item: .storage)
                 }
-                Section{
+                
+                Section {
                     SettingsItemView(item: .help)
                     SettingsItemView(item: .tellFriend)
                 }
-                
-                
             }
             .navigationTitle("Settings")
             .searchable(text: $searchText)
@@ -44,15 +47,13 @@ struct SettingsTabScreen: View {
 extension SettingsTabScreen {
     @ToolbarContentBuilder
     private func leadingNavItem() -> some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading){
-            Button("Sign Out"){
+        ToolbarItem(placement: .topBarLeading) {
+            Button("Sign Out") {
                 Task {
                     try? await AuthManager.shared.logOut()
                 }
             }
-            .bold()
             .foregroundStyle(.red)
-            
         }
     }
 }
@@ -63,16 +64,18 @@ private struct SettingsHeaderView: View {
             HStack {
                 Circle()
                     .frame(width: 55, height: 55)
+                
                 userInfoTextView()
             }
             
             SettingsItemView(item: .avatar)
         }
     }
+    
     private func userInfoTextView() -> some View {
-        VStack(alignment: .leading, spacing: 0){
+        VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text("User Name")
+                Text("Qa User 13")
                     .font(.title2)
                 
                 Spacer()
@@ -84,9 +87,11 @@ private struct SettingsHeaderView: View {
                     .background(Color(.systemGray5))
                     .clipShape(Circle())
             }
-            Text("user bio")
+            
+            Text("Hey there! I am using WhatsApp")
                 .foregroundStyle(.gray)
                 .font(.callout)
+            
         }
         .lineLimit(1)
     }

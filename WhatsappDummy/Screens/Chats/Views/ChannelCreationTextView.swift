@@ -10,15 +10,17 @@ import SwiftUI
 struct ChannelCreationTextView: View {
     
     @Environment(\.colorScheme) private var colorScheme
+    
     private var backgroundColor: Color {
         return colorScheme == .dark ? Color.black : Color.yellow
     }
+    
     var body: some View {
         ZStack(alignment: .top) {
             (
                 Text(Image(systemName: "lock.fill"))
                 +
-                Text(" Messages and Calls are end-to-end encrypted. No one outside of this chat can read or listen to them.")
+                Text(" Messages and calls are end-to-end encrypted, No one outside of this chat, not even WhatsApp, can read or listen to them.")
                 +
                 Text(" Learn more.")
                     .bold()

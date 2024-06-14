@@ -11,7 +11,7 @@ struct ChatPartnerRowView<Content: View>: View {
     private let user: UserItem
     private let trailingItems: Content
     
-    init(user: UserItem, @ViewBuilder trailingItems: () -> Content = { EmptyView()}) {
+    init(user: UserItem, @ViewBuilder trailingItems: () -> Content = { EmptyView() }) {
         self.user = user
         self.trailingItems = trailingItems()
     }
@@ -19,7 +19,6 @@ struct ChatPartnerRowView<Content: View>: View {
     var body: some View {
         HStack {
             CircularProfileImageView(user.profileImageUrl, size: .xSmall)
-                .frame(width:40, height:40)
             
             VStack(alignment: .leading) {
                 Text(user.username)
@@ -29,10 +28,9 @@ struct ChatPartnerRowView<Content: View>: View {
                 Text(user.bioUnwrapped)
                     .font(.caption)
                     .foregroundStyle(.gray)
-                
             }
+            
             trailingItems
-
         }
     }
 }

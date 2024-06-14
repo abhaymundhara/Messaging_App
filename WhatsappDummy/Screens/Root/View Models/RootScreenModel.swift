@@ -10,12 +10,11 @@ import Combine
 
 final class RootScreenModel: ObservableObject {
     @Published private(set) var authState = AuthState.pending
-    private var cancellable : AnyCancellable?
+    private var cancallable: AnyCancellable?
     
     init() {
-        cancellable = AuthManager.shared.authState.receive(on: DispatchQueue.main)
-            .sink {[weak self]
-                latestAuthState in
+        cancallable = AuthManager.shared.authState.receive(on: DispatchQueue.main)
+            .sink {[weak self] latestAuthState in
                 self?.authState = latestAuthState
             }
         
@@ -27,7 +26,7 @@ final class RootScreenModel: ObservableObject {
 //    private func registerTestAccount(with email: String) {
 //        Task {
 //            let username = email.replacingOccurrences(of: "@gmail.com", with: "")
-//            try? await AuthManager.shared.creatAccount(for: username, with: email, and: "12345678")
+//            try? await AuthManager.shared.createAccount(for: username, with: email, and: "12345678")
 //        }
 //    }
 }

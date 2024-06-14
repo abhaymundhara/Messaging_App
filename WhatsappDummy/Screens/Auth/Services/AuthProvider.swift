@@ -14,30 +14,29 @@ enum AuthState {
     case pending, loggedIn(UserItem), loggedOut
 }
 
-protocol AuthProvider{
+protocol AuthProvider {
     static var shared: AuthProvider { get }
     var authState: CurrentValueSubject<AuthState, Never> { get }
     func autoLogin() async
     func login(with email: String, and password: String) async throws
-    func creatAccount(for username: String, with email: String, and password: String) async throws
+    func createAccount(for username: String, with email: String, and password: String) async throws
     func logOut() async throws
 }
 
 enum AuthError: Error {
-    case accountsCreationFailed(_ description: String)
+    case accountCreationFailed(_ description: String)
     case failedToSaveUserInfo(_ description: String)
     case emailLoginFailed(_ description: String)
-    
 }
 
 extension AuthError: LocalizedError {
     var errorDescription: String? {
         switch self {
-        case .accountsCreationFailed(let description):
+        case .accountCreationFailed(let description):
             return description
         case .failedToSaveUserInfo(let description):
             return description
-        case.emailLoginFailed(let description):
+        case .emailLoginFailed(let description):
             return description
         }
     }
@@ -46,46 +45,42 @@ extension AuthError: LocalizedError {
 final class AuthManager: AuthProvider {
     
     private init() {
-        Task {
-            await autoLogin()
-        }
+        Task { await autoLogin() }
     }
     
-    static var shared: AuthProvider = AuthManager()
+    static let shared: AuthProvider = AuthManager()
     
     var authState = CurrentValueSubject<AuthState, Never>(.pending)
     
     func autoLogin() async {
         if Auth.auth().currentUser == nil {
             authState.send(.loggedOut)
-        }
-        else {
-                 fetchCurrentUserInfo()
+        } else {
+            fetchCurrentUserInfo()
         }
     }
     
     func login(with email: String, and password: String) async throws {
-        do{
+        do {
             let authResult = try await Auth.auth().signIn(withEmail: email, password: password)
             fetchCurrentUserInfo()
-            print("🔒 Successfully signed in \(authResult.user.email ?? "")")
+            print("🔐 Successfully Signed In \(authResult.user.email ?? "") ")
         } catch {
-            print("🔒 failed to sign in the account with: \(email)")
+            print("🔐 Failed to Sign Into the Account with: \(email)")
             throw AuthError.emailLoginFailed(error.localizedDescription)
         }
     }
     
-    func creatAccount(for username: String, with email: String, and password: String) async throws {
+    func createAccount(for username: String, with email: String, and password: String) async throws {
         do {
             let authResult = try await Auth.auth().createUser(withEmail: email, password: password)
             let uid = authResult.user.uid
             let newUser = UserItem(uid: uid, username: username, email: email)
-            try await saveUserInfoDb(user: newUser)
+            try await saveUserInfoDatabase(user: newUser)
             self.authState.send(.loggedIn(newUser))
-            
         } catch {
-            print("🔒 failed to create account: \(error.localizedDescription)")
-            throw AuthError.accountsCreationFailed(error.localizedDescription)
+            print("🔐 Failed to Create an Account: \(error.localizedDescription)")
+            throw AuthError.accountCreationFailed(error.localizedDescription)
         }
     }
     
@@ -93,36 +88,39 @@ final class AuthManager: AuthProvider {
         do {
             try Auth.auth().signOut()
             authState.send(.loggedOut)
-            print("🔒 successfully logged out of account: ")
+            print("🔐 Successfully logged out!")
         } catch {
-            print("🔒 failed to log out of account: \(error.localizedDescription)")
+            print("🔐 Failed to logOut current User: \(error.localizedDescription)")
         }
     }
 }
 
 extension AuthManager {
-    private func saveUserInfoDb(user: UserItem) async throws {
+    private func saveUserInfoDatabase(user: UserItem) async throws {
         do {
-            let userDictionary: [String: Any] = ["uid": user.uid, .username : user.username, .email : user.email]
-            
+            let userDictionary: [String: Any] = [.uid : user.uid, .username : user.username, .email : user.email]
             try await FirebaseConstants.UserRef.child(user.uid).setValue(userDictionary)
         } catch {
-            print("🔒 failed to save create user account info: \(error.localizedDescription)")
+            print("🔐 Failed to Save Created user Info to Database: \(error.localizedDescription)")
             throw AuthError.failedToSaveUserInfo(error.localizedDescription)
         }
-        }
+    }
+    
     private func fetchCurrentUserInfo() {
         guard let currentUid = Auth.auth().currentUser?.uid else { return }
         FirebaseConstants.UserRef.child(currentUid).observe(.value) {[weak self] snapshot in
+            
             guard let userDict = snapshot.value as? [String: Any] else { return }
             let loggedInUser = UserItem(dictionary: userDict)
             self?.authState.send(.loggedIn(loggedInUser))
-            print("user: \(loggedInUser.username) is logged")
+            print("🔐 \(loggedInUser.username) is logged in")
         } withCancel: { error in
-            print ("Failed to get current user id")
+            print("Failed to get current user info")
         }
     }
 }
+
+
 
 extension AuthManager {
     static let testAccounts: [String] = [

@@ -12,29 +12,34 @@ struct GroupPartnerPickerScreen: View {
     
     @State private var searchText = ""
     var body: some View {
-        List{
+        List {
             
             if viewModel.showSelectedUsers {
-                SelectedChatPartnerView(users: viewModel.selectedChatPartners) {
-                    user in
+                SelectedChatPartnerView(users: viewModel.selectedChatPartners) { user in
                     viewModel.handleItemSelection(user)
                 }
             }
+            
             Section {
                 ForEach(viewModel.users) { item in
                     Button {
                         viewModel.handleItemSelection(item)
                     } label: {
-                        chatPartnerRowView(item) .foregroundStyle(.black)
+                        chatPartnerRowView(item)
                     }
                 }
             }
-            if viewModel.isPaginable{
+            
+            if viewModel.isPaginatable {
                 loadMoreUsersView()
             }
         }
         .animation(.easeInOut, value: viewModel.showSelectedUsers)
-        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search name")
+        .searchable(
+            text: $searchText,
+            placement: .navigationBarDrawer(displayMode: .always),
+            prompt: "Search name or number"
+        )
         .toolbar {
             titleView()
             trailingNavItem()
@@ -55,11 +60,11 @@ struct GroupPartnerPickerScreen: View {
     
     private func loadMoreUsersView() -> some View {
         ProgressView()
-            .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/)
+            .frame(maxWidth: .infinity)
             .listRowBackground(Color.clear)
             .task {
-            await viewModel.fetchUsers()
-        }
+                await viewModel.fetchUsers()
+            }
     }
 }
 
@@ -70,8 +75,10 @@ extension GroupPartnerPickerScreen {
             VStack {
                 Text("Add Participants")
                     .bold()
+                
                 let count = viewModel.selectedChatPartners.count
-                let maxCount = ChannelConstants.maxGroupParticipants
+                let maxCount = ChannelContants.maxGroupParticipants
+                
                 Text("\(count)/\(maxCount)")
                     .foregroundStyle(.gray)
                     .font(.footnote)
@@ -80,19 +87,19 @@ extension GroupPartnerPickerScreen {
     }
     
     @ToolbarContentBuilder
-    
     private func trailingNavItem() -> some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
             Button("Next") {
                 viewModel.navStack.append(.setUpGroupChat)
-            } .bold()
-                .disabled(viewModel.disableNextButton)
+            }
+            .bold()
+            .disabled(viewModel.disableNextButton)
         }
     }
 }
 
 #Preview {
-    NavigationStack{
+    NavigationStack {
         GroupPartnerPickerScreen(viewModel: ChatPartnerPickerViewModel())
     }
 }

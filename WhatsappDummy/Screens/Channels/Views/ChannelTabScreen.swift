@@ -19,19 +19,16 @@ struct ChannelTabScreen: View {
         NavigationStack(path: $viewModel.navRoutes) {
             List {
                 archivedButton()
+                
                 ForEach(viewModel.channels) { channel in
                     Button {
                         viewModel.navRoutes.append(.chatRoom(channel))
                     } label: {
                         ChannelItemView(channel: channel)
                     }
-//                    NavigationLink {
-//                        ChatRoomScreen(channel: channel)
-//                    } label: {
-//                        ChannelItemView(channel: channel)
-//                    }
                 }
-                inboxFooter()
+                
+                inboxFooterView()
                     .listRowSeparator(.hidden)
             }
             .navigationTitle("Chats")
@@ -57,15 +54,18 @@ struct ChannelTabScreen: View {
 }
 
 extension ChannelTabScreen {
+    
     @ViewBuilder
-    private func destinationView(for route: ChannelTabRoutes) -> some View{
+    private func destinationView(for route: ChannelTabRoutes) -> some View {
         switch route {
         case .chatRoom(let channel):
             ChatRoomScreen(channel: channel)
         }
     }
+    
+    
     @ToolbarContentBuilder
-    private func leadingNavItems() -> some ToolbarContent{
+    private func leadingNavItems() -> some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
             Menu {
                 Button {
@@ -74,18 +74,17 @@ extension ChannelTabScreen {
                     Label("Select Chats", systemImage: "checkmark.circle")
                 }
             } label: {
-                Image(systemName:"ellipsis.circle")
+                Image(systemName: "ellipsis.circle")
             }
         }
     }
     
     @ToolbarContentBuilder
-    private func trailingNavItems() -> some ToolbarContent{
+    private func trailingNavItems() -> some ToolbarContent {
         ToolbarItemGroup(placement: .topBarTrailing) {
             aiButton()
             cameraButton()
             newChatButton()
-            
         }
     }
     
@@ -109,27 +108,31 @@ extension ChannelTabScreen {
         Button {
             
         } label: {
-            Image(systemName: "camera").foregroundColor(.whatsAppBlack)
+            Image(systemName: "camera")
         }
     }
+    
     
     private func archivedButton() -> some View {
         Button {
             
         } label: {
             Label("Archived", systemImage: "archivebox.fill")
-                .body
-                .padding() .foregroundStyle(.gray).bold()
+                .bold()
+                .padding()
+                .foregroundStyle(.gray)
         }
     }
     
-    private func inboxFooter() -> some View {
-        HStack{
+    private func inboxFooterView() -> some View {
+        HStack {
             Image(systemName: "lock.fill")
-           (
-            Text("Your personal message are ")
-            +
-            Text("end-to-end encrypted").foregroundColor(.blue)
+            
+            (
+                Text("Your personal messages are ")
+                +
+                Text("end-to-end encrypted")
+                    .foregroundColor(.blue)
             )
         }
         .foregroundStyle(.gray)

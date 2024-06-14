@@ -20,11 +20,11 @@ struct AuthTextField: View {
             switch type {
             case .password:
                 SecureField(type.placeholder, text: $text)
+                
             default:
                 TextField(type.placeholder, text: $text)
                     .keyboardType(type.keyboardType)
             }
-            
         }
         .foregroundStyle(.white)
         .padding()
@@ -72,14 +72,15 @@ extension AuthTextField {
         }
     }
 }
-    
-    #Preview {
-        ZStack {
-            Color.teal
-            VStack{
+
+#Preview {
+    ZStack {
+        Color.teal
+        VStack {
             AuthTextField(type: .email, text: .constant(""))
             AuthTextField(type: .password, text: .constant(""))
-            AuthTextField(type: .custom("Birthday", "birthday.cake"), text: .constant(""))
+            AuthTextField(type: .custom("BirthDay", "birthday.cake"), text: .constant(""))
+
         }
     }
 }

@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct MessageListView: UIViewControllerRepresentable{
-        typealias UIViewControllerType = MessageListController
+struct MessageListView: UIViewControllerRepresentable {
+    typealias UIViewControllerType = MessageListController
     private var viewModel: ChatRoomViewModel
     
     init(_ viewModel: ChatRoomViewModel) {
@@ -20,9 +20,7 @@ struct MessageListView: UIViewControllerRepresentable{
         return messageListController
     }
     
-    func updateUIViewController(_ uiViewController: MessageListController, context: Context) {
-        
-    }
+    func updateUIViewController(_ uiViewController: MessageListController, context: Context) { }
 }
 
 #Preview {

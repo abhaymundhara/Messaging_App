@@ -1,12 +1,12 @@
 //
 //  String+Extensions.swift
-//  WhatsappDummy
+//  WhatsAppClone
 //
-//  Created by abhay mundhara on 05/06/2024.
 //
 
 import Foundation
 
 extension String {
-    var isEmptyorWhiteSpace: Bool { return trimmingCharacters(in: .whitespacesAndNewlines).isEmpty}
+    var isEmptyOrWhiteSpace: Bool { return trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
 }
+

@@ -10,12 +10,10 @@ import SwiftUI
 struct ChannelItemView: View {
     let channel: ChannelItem
     var body: some View {
-        HStack(alignment: .top, spacing: 10){
-           // Circle()
+        HStack(alignment: .top, spacing: 10) {
             CircularProfileImageView(channel, size: .medium)
-                .frame(width: 60, height: 60)
             
-            VStack(alignment: .leading, spacing: 3){
+            VStack(alignment: .leading, spacing: 3) {
                 titleTextView()
                 lastMessagePreview()
             }
@@ -23,20 +21,22 @@ struct ChannelItemView: View {
     }
     
     private func titleTextView() -> some View {
-        HStack{
+        HStack {
             Text(channel.title)
                 .lineLimit(1)
                 .bold()
             
             Spacer()
+            
             Text(channel.lastMessageTimeStamp.dayOrTimeRepresentation)
-                .foregroundStyle(.gray) .font(.system(size: 15))
+                .foregroundStyle(.gray)
+                .font(.system(size: 15))
         }
     }
     
     private func lastMessagePreview() -> some View {
         Text(channel.lastMessage)
-            .font(.system(size:16))
+            .font(.system(size: 16))
             .lineLimit(2)
             .foregroundStyle(.gray)
     }

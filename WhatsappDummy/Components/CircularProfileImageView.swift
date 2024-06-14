@@ -1,8 +1,8 @@
 //
-//  CircluarProfileImageView.swift
-//  WhatsappDummy
+//  CircularProfileImageView.swift
+//  WhatsAppClone
 //
-//  Created by abhay mundhara on 06/06/2024.
+//  Created by Osaretin Uyigue on 4/14/24.
 //
 
 import SwiftUI
@@ -26,8 +26,7 @@ struct CircularProfileImageView: View {
                 .placeholder { ProgressView() }
                 .scaledToFill()
                 .frame(width: size.dimension, height: size.dimension)
-                .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
-        
+                .clipShape(Circle())
         } else {
             placeholderImageView()
         }
@@ -55,16 +54,22 @@ extension CircularProfileImageView {
                 
             case .mini:
                 return 30
+                
             case .xSmall:
                 return 40
+
             case .small:
                 return 50
+
             case .medium:
                 return 60
+
             case .large:
                 return 80
+
             case .xLarge:
                 return 120
+
             case .custom(let dimen):
                 return dimen
             }
