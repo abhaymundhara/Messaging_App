@@ -19,6 +19,9 @@ struct MessageItem: Identifiable {
     let thumbnailUrl: String?
     var thumbnailHeight: CGFloat?
     var thumbnailWidth: CGFloat?
+    var videoURL: String?
+    var audioURL: String?
+    var audioDuration: TimeInterval?
     
     
     var direction: MessageDirection {
@@ -87,6 +90,9 @@ extension MessageItem {
         self.thumbnailUrl = dict[.thumbnailUrl] as? String ?? nil
         self.thumbnailWidth = dict[.thumbnailWidth] as? CGFloat ?? nil
         self.thumbnailHeight = dict[.thumbnailHeight] as? CGFloat ?? nil
+        self.videoURL = dict[.videoURL] as? String ?? nil
+        self.audioURL = dict[.audioURL] as? String ?? nil
+        self.audioDuration = dict[.audioDuration] as? TimeInterval ?? nil
     }
 }
 
@@ -97,4 +103,7 @@ extension String {
     static let text = "text"
     static let thumbnailWidth = "thumbnailWidth"
     static let thumbnailHeight = "thumbnailHeight"
+    static let videoURL = "videoURL"
+    static let audioURL = "audioURL"
+    static let audioDuration = "audioDuration"
 }
