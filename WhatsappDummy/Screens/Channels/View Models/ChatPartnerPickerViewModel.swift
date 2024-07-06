@@ -45,7 +45,7 @@ final class ChatPartnerPickerViewModel: ObservableObject {
         return !users.isEmpty
     }
     
-    private var isDirectChannel: Bool {
+    var isDirectChannel: Bool {
         return selectedChatPartners.count == 1
     }
     
@@ -73,7 +73,7 @@ final class ChatPartnerPickerViewModel: ObservableObject {
     // MARK: - Public Methods
     func fetchUsers() async {
         do {
-            let userNode = try await UserService.paginateUsers(lastCursor: lastCursor, pageSize: 5)
+            let userNode = try await UserService.paginateUsers(lastCursor: lastCursor, pageSize: 12)
             var fetchedUsers = userNode.users
             guard let currentUid = Auth.auth().currentUser?.uid else { return }
             fetchedUsers = fetchedUsers.filter { $0.uid != currentUid }
@@ -112,13 +112,16 @@ final class ChatPartnerPickerViewModel: ObservableObject {
     }
     
     func createDirectChannel(_ chatPartner: UserItem, completion: @escaping (_ newChannel: ChannelItem) -> Void) {
+        if selectedChatPartners.isEmpty {
+            selectedChatPartners.append(chatPartner)
+        }
         selectedChatPartners.append(chatPartner)
 
         Task {
             // if existing DM, get the channel
             if let channelId = await verifyIfDirectChannelExits(with: chatPartner.uid) {
                 let snapshot = try await FirebaseConstants.ChannelsRef.child(channelId).getData()
-                var channelDict = snapshot.value as! [String: Any]
+                let channelDict = snapshot.value as! [String: Any]
                 var directChannel = ChannelItem(channelDict)
                 // MARK: Add current User to channel member
                 directChannel.members = selectedChatPartners
@@ -187,6 +190,7 @@ final class ChatPartnerPickerViewModel: ObservableObject {
         var channelDict: [String: Any] = [
             .id: channelId,
             .lastMessage: newChannelBroadcast,
+            .lastMessageType: newChannelBroadcast,
             .creationDate: timeStamp,
             .lastMessageTimeStamp: timeStamp,
             .membersUids: membersUids,

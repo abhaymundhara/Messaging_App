@@ -17,6 +17,11 @@
 		A34966752C1B9AB00006BEC3 /* FirebaseHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A34966742C1B9AB00006BEC3 /* FirebaseHelper.swift */; };
 		A34966772C1BEE570006BEC3 /* UIApplication+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A34966762C1BEE570006BEC3 /* UIApplication+Extensions.swift */; };
 		A34966792C1BF0F70006BEC3 /* UIWindowScene+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A34966782C1BF0F70006BEC3 /* UIWindowScene+Extensions.swift */; };
+		A37263DC2CE6EA540080D0BC /* AlertKit in Frameworks */ = {isa = PBXBuildFile; productRef = A37263DB2CE6EA540080D0BC /* AlertKit */; };
+		A37263DF2CE714E80080D0BC /* StreamVideo in Frameworks */ = {isa = PBXBuildFile; productRef = A37263DE2CE714E80080D0BC /* StreamVideo */; };
+		A37263E12CE714E80080D0BC /* StreamVideoSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = A37263E02CE714E80080D0BC /* StreamVideoSwiftUI */; };
+		A37263E32CE714E80080D0BC /* StreamVideoUIKit in Frameworks */ = {isa = PBXBuildFile; productRef = A37263E22CE714E80080D0BC /* StreamVideoUIKit */; };
+		A37AB5FD2C2639AA00C898C5 /* VoiceMessagePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37AB5FC2C2639AA00C898C5 /* VoiceMessagePlayer.swift */; };
 		A39401E62C0E37D50024845D /* WhatsappDummyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39401E52C0E37D50024845D /* WhatsappDummyApp.swift */; };
 		A39401EA2C0E37D70024845D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A39401E92C0E37D70024845D /* Assets.xcassets */; };
 		A39401ED2C0E37D70024845D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A39401EC2C0E37D70024845D /* Preview Assets.xcassets */; };
@@ -72,6 +77,9 @@
 		A39402C72C1272F20024845D /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = A39402C62C1272F20024845D /* Kingfisher */; };
 		A39402CA2C1273400024845D /* CircularProfileImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39402C92C1273400024845D /* CircularProfileImageView.swift */; };
 		A39402CC2C13264E0024845D /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39402CB2C13264E0024845D /* Date+Extensions.swift */; };
+		A3D533F62C5CF18C00B77633 /* SettingsTabViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3D533F52C5CF18C00B77633 /* SettingsTabViewModel.swift */; };
+		A3EA76D62C306C8500F21A6C /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3EA76D52C306C8500F21A6C /* Haptics.swift */; };
+		A3EA76D82C39960100F21A6C /* BubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3EA76D72C39960100F21A6C /* BubbleView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -85,6 +93,8 @@
 		A34966742C1B9AB00006BEC3 /* FirebaseHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseHelper.swift; sourceTree = "<group>"; };
 		A34966762C1BEE570006BEC3 /* UIApplication+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+Extensions.swift"; sourceTree = "<group>"; };
 		A34966782C1BF0F70006BEC3 /* UIWindowScene+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindowScene+Extensions.swift"; sourceTree = "<group>"; };
+		A37263E42CE716170080D0BC /* Calculator-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Calculator-Info.plist"; sourceTree = "<group>"; };
+		A37AB5FC2C2639AA00C898C5 /* VoiceMessagePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessagePlayer.swift; sourceTree = "<group>"; };
 		A39401E22C0E37D50024845D /* Calculator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Calculator.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A39401E52C0E37D50024845D /* WhatsappDummyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsappDummyApp.swift; sourceTree = "<group>"; };
 		A39401E92C0E37D70024845D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -135,6 +145,9 @@
 		A39402C32C1264350024845D /* AdminMessageTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminMessageTextView.swift; sourceTree = "<group>"; };
 		A39402C92C1273400024845D /* CircularProfileImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularProfileImageView.swift; sourceTree = "<group>"; };
 		A39402CB2C13264E0024845D /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
+		A3D533F52C5CF18C00B77633 /* SettingsTabViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTabViewModel.swift; sourceTree = "<group>"; };
+		A3EA76D52C306C8500F21A6C /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
+		A3EA76D72C39960100F21A6C /* BubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BubbleView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,9 +157,13 @@
 			files = (
 				A39402C72C1272F20024845D /* Kingfisher in Frameworks */,
 				A39402012C0E398E0024845D /* FirebaseMessaging in Frameworks */,
+				A37263DC2CE6EA540080D0BC /* AlertKit in Frameworks */,
+				A37263E32CE714E80080D0BC /* StreamVideoUIKit in Frameworks */,
+				A37263E12CE714E80080D0BC /* StreamVideoSwiftUI in Frameworks */,
 				A39401FF2C0E398E0024845D /* FirebaseDatabaseSwift in Frameworks */,
 				A39401FD2C0E398E0024845D /* FirebaseDatabase in Frameworks */,
 				A39402032C0E398E0024845D /* FirebaseStorage in Frameworks */,
+				A37263DF2CE714E80080D0BC /* StreamVideo in Frameworks */,
 				A39401FB2C0E398E0024845D /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -157,6 +174,7 @@
 		A39401D92C0E37D50024845D = {
 			isa = PBXGroup;
 			children = (
+				A37263E42CE716170080D0BC /* Calculator-Info.plist */,
 				A39401E42C0E37D50024845D /* WhatsappDummy */,
 				A39401E32C0E37D50024845D /* Products */,
 			);
@@ -230,6 +248,7 @@
 		A39402572C0E4D1A0024845D /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				A3D533F42C5CF16300B77633 /* ViewModel */,
 				A394026A2C0E50420024845D /* Models */,
 				A394025F2C0E4DF60024845D /* Views */,
 			);
@@ -270,6 +289,7 @@
 			isa = PBXGroup;
 			children = (
 				A39402852C0E53030024845D /* CustomModifiers.swift */,
+				A3EA76D52C306C8500F21A6C /* Haptics.swift */,
 				A34966742C1B9AB00006BEC3 /* FirebaseHelper.swift */,
 			);
 			path = Helpers;
@@ -330,6 +350,7 @@
 				A39402832C0E52BF0024845D /* BubbleImageView.swift */,
 				A39402C12C12613C0024845D /* ChannelCreationTextView.swift */,
 				A39402812C0E52B10024845D /* BubbleAudioView.swift */,
+				A3EA76D72C39960100F21A6C /* BubbleView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -456,8 +477,17 @@
 			isa = PBXGroup;
 			children = (
 				A39402BD2C1128410024845D /* ChatRoomViewModel.swift */,
+				A37AB5FC2C2639AA00C898C5 /* VoiceMessagePlayer.swift */,
 			);
 			path = "View Models";
+			sourceTree = "<group>";
+		};
+		A3D533F42C5CF16300B77633 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				A3D533F52C5CF18C00B77633 /* SettingsTabViewModel.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -483,6 +513,10 @@
 				A39402002C0E398E0024845D /* FirebaseMessaging */,
 				A39402022C0E398E0024845D /* FirebaseStorage */,
 				A39402C62C1272F20024845D /* Kingfisher */,
+				A37263DB2CE6EA540080D0BC /* AlertKit */,
+				A37263DE2CE714E80080D0BC /* StreamVideo */,
+				A37263E02CE714E80080D0BC /* StreamVideoSwiftUI */,
+				A37263E22CE714E80080D0BC /* StreamVideoUIKit */,
 			);
 			productName = WhatsappDummy;
 			productReference = A39401E22C0E37D50024845D /* Calculator.app */;
@@ -515,6 +549,8 @@
 			packageReferences = (
 				A39401F92C0E398E0024845D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				A39402C52C1272F20024845D /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				A37263DA2CE6EA540080D0BC /* XCRemoteSwiftPackageReference "AlertKit" */,
+				A37263DD2CE714E80080D0BC /* XCRemoteSwiftPackageReference "stream-video-swift" */,
 			);
 			productRefGroup = A39401E32C0E37D50024845D /* Products */;
 			projectDirPath = "";
@@ -544,6 +580,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A34966772C1BEE570006BEC3 /* UIApplication+Extensions.swift in Sources */,
+				A3D533F62C5CF18C00B77633 /* SettingsTabViewModel.swift in Sources */,
 				A39402A02C0E56E40024845D /* RootScreen.swift in Sources */,
 				A39402CA2C1273400024845D /* CircularProfileImageView.swift in Sources */,
 				A39402BA2C108C790024845D /* String+Extensions.swift in Sources */,
@@ -553,6 +590,7 @@
 				A39402862C0E53030024845D /* CustomModifiers.swift in Sources */,
 				A39402AD2C0F582A0024845D /* SelectedChatPartnerView.swift in Sources */,
 				A39402C02C112A340024845D /* MessageService.swift in Sources */,
+				A3EA76D62C306C8500F21A6C /* Haptics.swift in Sources */,
 				A39402C22C12613C0024845D /* ChannelCreationTextView.swift in Sources */,
 				A394027A2C0E51D60024845D /* MessageListController.swift in Sources */,
 				A39402A32C0E701E0024845D /* UserItem.swift in Sources */,
@@ -568,6 +606,7 @@
 				A39401E62C0E37D50024845D /* WhatsappDummyApp.swift in Sources */,
 				A34966752C1B9AB00006BEC3 /* FirebaseHelper.swift in Sources */,
 				A34966792C1BF0F70006BEC3 /* UIWindowScene+Extensions.swift in Sources */,
+				A37AB5FD2C2639AA00C898C5 /* VoiceMessagePlayer.swift in Sources */,
 				A394026C2C0E50560024845D /* SettingsItem.swift in Sources */,
 				A39402912C0E55C20024845D /* AuthTextField.swift in Sources */,
 				A39402802C0E52940024845D /* BubbleTailView.swift in Sources */,
@@ -575,6 +614,7 @@
 				A34966692C1B8A5D0006BEC3 /* MediaPlayerView.swift in Sources */,
 				A34966712C1B8AD90006BEC3 /* VoiceRecorderService.swift in Sources */,
 				A39402932C0E55FA0024845D /* AuthButton.swift in Sources */,
+				A3EA76D82C39960100F21A6C /* BubbleView.swift in Sources */,
 				A39402B22C0F683A0024845D /* UserService.swift in Sources */,
 				A39402AF2C0F5F3E0024845D /* NewGroupSetUpScreen.swift in Sources */,
 				A39402AB2C0EA8520024845D /* GroupPartnerPickerScreen.swift in Sources */,
@@ -735,6 +775,9 @@
 				DEVELOPMENT_TEAM = 8PGRAN474J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Calculator-Info.plist";
+				INFOPLIST_KEY_NSCameraUsageDescription = "";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -764,6 +807,9 @@
 				DEVELOPMENT_TEAM = 8PGRAN474J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Calculator-Info.plist";
+				INFOPLIST_KEY_NSCameraUsageDescription = "";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -806,6 +852,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		A37263DA2CE6EA540080D0BC /* XCRemoteSwiftPackageReference "AlertKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparrowcode/AlertKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.9;
+			};
+		};
+		A37263DD2CE714E80080D0BC /* XCRemoteSwiftPackageReference "stream-video-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/GetStream/stream-video-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.14.1;
+			};
+		};
 		A39401F92C0E398E0024845D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -825,6 +887,26 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		A37263DB2CE6EA540080D0BC /* AlertKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A37263DA2CE6EA540080D0BC /* XCRemoteSwiftPackageReference "AlertKit" */;
+			productName = AlertKit;
+		};
+		A37263DE2CE714E80080D0BC /* StreamVideo */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A37263DD2CE714E80080D0BC /* XCRemoteSwiftPackageReference "stream-video-swift" */;
+			productName = StreamVideo;
+		};
+		A37263E02CE714E80080D0BC /* StreamVideoSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A37263DD2CE714E80080D0BC /* XCRemoteSwiftPackageReference "stream-video-swift" */;
+			productName = StreamVideoSwiftUI;
+		};
+		A37263E22CE714E80080D0BC /* StreamVideoUIKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A37263DD2CE714E80080D0BC /* XCRemoteSwiftPackageReference "stream-video-swift" */;
+			productName = StreamVideoUIKit;
+		};
 		A39401FA2C0E398E0024845D /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A39401F92C0E398E0024845D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

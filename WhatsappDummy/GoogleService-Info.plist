@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>required for voice messaging</string>
 	<key>API_KEY</key>
 	<string>AIzaSyAANcjxsaXkQNJ3E9R-BGryhJFTNICYESk</string>
 	<key>GCM_SENDER_ID</key>
@@ -28,5 +26,7 @@
 	<true/>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:676670562480:ios:54b3ecd77c9eae73975b75</string>
+	<key>NSMicrophoneUsageDescription</key>
+    	<string>We need access to the microphone to record audio messages.</string>
 </dict>
 </plist>

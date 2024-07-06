@@ -20,6 +20,9 @@ final class ChatRoomViewModel: ObservableObject {
     @Published var isRecodingVoiceMessage = false
     @Published var elapsedVoiceMessageTime: TimeInterval = 0
     @Published var scrollToBottomRequest: (scroll: Bool, isAnimated: Bool) = (false, false)
+    @Published var isPaginating = false
+    private var currentPage: String?
+    private var firstMessage: MessageItem?
     
     private(set) var channel: ChannelItem
     private var subscriptions = Set<AnyCancellable>()
@@ -56,7 +59,7 @@ final class ChatRoomViewModel: ObservableObject {
                 self.currentUser = currentUser
                 
                 if self.channel.allMembersFetched {
-                    self.getMessages()
+                    self.getHistoricalMessages()
                     print("channel members: \(channel.members.map { $0.username })")
                 } else {
                     self.getAllChannelMembers()
@@ -82,33 +85,39 @@ final class ChatRoomViewModel: ObservableObject {
     }
     
     func sendMessage() {
-        guard let currentUser else { return }
         if mediaAttachments.isEmpty {
-            MessageService.sendTextMessage(to: channel, from: currentUser, textMessage) {[weak self] in
-                self?.textMessage = ""
+            sendTextMessage(textMessage)
             }
-        } else {
+         else {
             sendMultipleMediaMessages(textMessage, attachments: mediaAttachments)
             clearTextInputArea()
         }
     }
     
+    private func sendTextMessage(_ text: String) {
+        guard let currentUser else { return }
+        MessageService.sendTextMessage(to: channel, from: currentUser, textMessage) {[weak self] in
+            self?.textMessage = ""
+        }
+    }
+    
     private func clearTextInputArea() {
+        textMessage = ""
         mediaAttachments.removeAll()
         photoPickerItems.removeAll()
-        textMessage = ""
         UIApplication.dismissKeyboard()
     }
     
     private func sendMultipleMediaMessages(_ text: String, attachments: [MediaAttachment]) {
-        mediaAttachments.forEach { attachment in
+        for(index, attachment) in attachments.enumerated() {
+            let textMessage = index == 0 ? text : ""
             switch attachment.type {
             case .photo:
-                sendPhotoMessage(text: text, attachment)
+                sendPhotoMessage(text: textMessage, attachment)
             case .video:
-                sendVideoMessage(text: text, attachment)
+                sendVideoMessage(text: textMessage, attachment)
             case .audio:
-                sendVoiceMessage(text: text, attachment)
+                sendVoiceMessage(text: textMessage, attachment)
             }
         }
     }
@@ -180,6 +189,9 @@ final class ChatRoomViewModel: ObservableObject {
                     
                 }
             
+            if !text.isEmptyOrWhiteSpace {
+                self.sendTextMessage(text)
+            }
         }
     }
     
@@ -224,10 +236,47 @@ final class ChatRoomViewModel: ObservableObject {
         }
     }
     
-    private func getMessages() {
-        MessageService.getMessages(for: channel) {[weak self] messages in
-            self?.messages = messages
-            print("messages: \(messages.map { $0.text })")
+    var isPaginatable: Bool {
+        return  currentPage != firstMessage?.id
+    }
+    
+     func getHistoricalMessages() {
+         isPaginating = currentPage != nil
+        MessageService.getHistoricalMessages(for: channel, lastCursor: currentPage, pageSize: 12) {[weak self] messageNode in
+            // if it's the initial pull
+            if  self?.currentPage == nil {
+                self?.getFirstMessage()
+                self?.listenForNewMessages()
+            }
+            self?.messages.insert(contentsOf: messageNode.messages, at: 0)
+            self?.currentPage = messageNode.currentCursor
+            self?.scrollToBottom(isAnimated: false)
+            self?.isPaginating = false
+        }
+    }
+    
+    func paginateMoreMessages() {
+        guard isPaginatable else {
+            isPaginating = false
+            return
+        }
+        getHistoricalMessages()
+    }
+
+    private func getFirstMessage() {
+        MessageService.getFirstMessage(in: channel) {[weak self] firstMessage in
+            self?.firstMessage = firstMessage
+            print("getFirstMessage: \(firstMessage.id)")
+        }
+    }
+    
+    private func listenForNewMessages() {
+        MessageService.listenForNewMessages(in: channel) {[weak self] newMessage in
+            self?.messages.append(newMessage)
+            self?.scrollToBottom(isAnimated: false)
+            
+            guard let self = self else { return }
+            MessageService.resetUnReadCountForMembers(in: self.channel)
         }
     }
     
@@ -241,7 +290,7 @@ final class ChatRoomViewModel: ObservableObject {
         UserService.getUsers(with: memberUIDSToFetch) { [weak self] userNode in
             guard let self = self else { return }
             self.channel.members.append(contentsOf: userNode.users)
-            self.getMessages()
+            self.getHistoricalMessages()
             print("getAllChannelMembers: \(channel.members.map { $0.username })")
         }
         
@@ -336,5 +385,28 @@ final class ChatRoomViewModel: ObservableObject {
         
         guard let photoIndex = photoPickerItems.firstIndex(where: { $0.itemIdentifier == item.id }) else { return }
         photoPickerItems.remove(at: photoIndex)
+    }
+    
+    func isNewDay(for message: MessageItem, at index: Int) -> Bool {
+        let priorIndex = max(0, (index - 1))
+        let priorMessage = messages[priorIndex]
+        return !message.timeStamp.isSameDay(as: priorMessage.timeStamp)
+    }
+    
+    func showSenderName(for message: MessageItem, at index: Int) -> Bool {
+        guard channel.isGroupChat else { return false }
+        //show only if it's a GC
+        let isNewDay = isNewDay(for: message, at: index)
+        let priorIndex = max(0, (index - 1))
+        let priorMessage = messages[priorIndex]
+        
+        if isNewDay {
+            // if not sent by current user and is a GC
+            return !message.isSentByMe
+        }
+        else {
+            // if not sent by current user and is a GC and prev message wasn't send by same sender
+            return !message.isSentByMe && !message.containsSameOwner(as: priorMessage)
+        }
     }
 }

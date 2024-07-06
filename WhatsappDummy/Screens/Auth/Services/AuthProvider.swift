@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import FirebaseAuth
 import FirebaseDatabase
+import StreamVideo
 
 enum AuthState {
     case pending, loggedIn(UserItem), loggedOut
@@ -52,18 +53,24 @@ final class AuthManager: AuthProvider {
     
     var authState = CurrentValueSubject<AuthState, Never>(.pending)
     
+    @Published var streamVideo: StreamVideo?
+    
     func autoLogin() async {
         if Auth.auth().currentUser == nil {
             authState.send(.loggedOut)
         } else {
-            fetchCurrentUserInfo()
+            fetchCurrentUserInfo {[weak self] currentUser in
+                self?.setUp(currentUser)
+            }
         }
     }
     
     func login(with email: String, and password: String) async throws {
         do {
             let authResult = try await Auth.auth().signIn(withEmail: email, password: password)
-            fetchCurrentUserInfo()
+            fetchCurrentUserInfo {[weak self] currentUser in
+                self?.setUp(currentUser)
+            }
             print("🔐 Successfully Signed In \(authResult.user.email ?? "") ")
         } catch {
             print("🔐 Failed to Sign Into the Account with: \(email)")
@@ -77,7 +84,7 @@ final class AuthManager: AuthProvider {
             let uid = authResult.user.uid
             let newUser = UserItem(uid: uid, username: username, email: email)
             try await saveUserInfoDatabase(user: newUser)
-            self.authState.send(.loggedIn(newUser))
+            setUp(newUser)
         } catch {
             print("🔐 Failed to Create an Account: \(error.localizedDescription)")
             throw AuthError.accountCreationFailed(error.localizedDescription)
@@ -106,17 +113,33 @@ extension AuthManager {
         }
     }
     
-    private func fetchCurrentUserInfo() {
+    private func fetchCurrentUserInfo(completion: @escaping(UserItem) -> Void) {
         guard let currentUid = Auth.auth().currentUser?.uid else { return }
         FirebaseConstants.UserRef.child(currentUid).observe(.value) {[weak self] snapshot in
             
             guard let userDict = snapshot.value as? [String: Any] else { return }
             let loggedInUser = UserItem(dictionary: userDict)
+            completion(loggedInUser)
             self?.authState.send(.loggedIn(loggedInUser))
             print("🔐 \(loggedInUser.username) is logged in")
         } withCancel: { error in
             print("Failed to get current user info")
         }
+    }
+    
+    private func setUp(_ currentUser: UserItem) {
+        setUpStreamVideo(for: currentUser)
+        authState.send(.loggedIn(currentUser))
+    }
+}
+
+extension AuthManager {
+    private func setUpStreamVideo(for currentUser: UserItem) {
+        let apiKey = "nsxx7y5rb3kq"
+        let token = UserToken(rawValue:  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3Byb250by5nZXRzdHJlYW0uaW8iLCJzdWIiOiJ1c2VyL1F1aS1Hb25fSmlubiIsInVzZXJfaWQiOiJRdWktR29uX0ppbm4iLCJ2YWxpZGl0eV9pbl9zZWNvbmRzIjo2MDQ4MDAsImlhdCI6MTczMTY0OTYwNCwiZXhwIjoxNzMyMjU0NDA0fQ.SjTP_SqDch3XBtsJKJ4xPCwdh5chkpvk5OIlNDIQTNA")
+        let user = User(id: "Qui-Gon_Jinn", name: "Abhay")
+        
+        streamVideo = StreamVideo(apiKey: apiKey, user: user, token: token)
     }
 }
 

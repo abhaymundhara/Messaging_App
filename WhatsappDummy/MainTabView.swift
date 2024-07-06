@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import StreamVideoSwiftUI
 
 struct MainTabView: View {
     
     private let currentUser: UserItem
+    @StateObject private var callViewModel = CallViewModel()
     
     init(_ currentUser: UserItem){
         self.currentUser = currentUser
@@ -36,13 +38,15 @@ struct MainTabView: View {
                     Image(systemName: Tab.chats.icon)
                     Text(Tab.chats.title)
                 }
-            SettingsTabScreen()
+            SettingsTabScreen(currentUser)
                 .tabItem {
                     Image(systemName: Tab.settings.icon)
                     Text(Tab.settings.title)
                 }
             
         }
+        .modifier(CallModifier(viewModel: callViewModel))
+        .environmentObject(callViewModel)
     }
     
     private func makeTabBarOpaque(){

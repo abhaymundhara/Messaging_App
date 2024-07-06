@@ -10,12 +10,12 @@ import UIKit
 import SwiftUI
 import Combine
 
-final class MessageListController: UIViewController {
+final class MessageListController: UIViewController{
     
     // MARK: View's LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.backgroundColor = .clear
+        messagesCollectionView.backgroundColor = .clear
         view.backgroundColor = .clear
         setUpViews()
         setUpMessageListners()
@@ -39,30 +39,73 @@ final class MessageListController: UIViewController {
     private let viewModel: ChatRoomViewModel
     private var subscriptions = Set<AnyCancellable>()
     private let cellIdentifier = "MessageListControllerCells"
+    private var lastScrollPosition: String?
     
-    private lazy var tableView: UITableView = {
-        let tableView = UITableView()
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.separatorStyle = .none
-        tableView.backgroundColor = UIColor.gray.withAlphaComponent(0.4)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.contentInset = .init(top: 0, left: 0, bottom: 60, right: 0)
-        tableView.scrollIndicatorInsets = .init(top: 0, left: 0, bottom: 60, right: 0)
-        tableView.keyboardDismissMode = .onDrag
-        return tableView
+    private lazy var pullToRefresh: UIRefreshControl = {
+        let pullToRefresh = UIRefreshControl()
+        pullToRefresh.addTarget(self, action: #selector(refreshData), for: .valueChanged)
+        return pullToRefresh
     }()
     
+    private let compositionalLayout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
+        var listConfig = UICollectionLayoutListConfiguration(appearance: .plain)
+        listConfig.backgroundColor = UIColor.gray.withAlphaComponent(0.2)
+        listConfig.showsSeparators = false
+        let section = NSCollectionLayoutSection.list(using: listConfig, layoutEnvironment: layoutEnvironment)
+        section.contentInsets.leading = 0
+        section.contentInsets.trailing = 0
+        section.interGroupSpacing = -10
+        return section
+        
+    }
+    
+    private lazy var messagesCollectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: compositionalLayout)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.selfSizingInvalidation = .enabledIncludingConstraints
+        collectionView.scrollIndicatorInsets = .init(top: 0, left: 0, bottom: 60, right: 0)
+        collectionView.contentInset = .init(top: 0, left: 0, bottom: 60, right: 0)
+        collectionView.keyboardDismissMode = .onDrag
+        collectionView.backgroundColor = .clear
+        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellIdentifier)
+        collectionView.refreshControl = pullToRefresh
+        return collectionView
+    }()
+    
+
     private let backgroundImageView: UIImageView = {
         let backgroudImageView = UIImageView(image: .chatbackground)
         backgroudImageView.translatesAutoresizingMaskIntoConstraints = false
         return backgroudImageView
     }()
     
+    private let pullDownHUDView: UIButton = {
+        var buttonConfig = UIButton.Configuration.filled()
+        var imageConfig = UIImage.SymbolConfiguration(pointSize: 10, weight: .black)
+        
+        let image = UIImage(systemName: "arrow.up.circle.fill", withConfiguration: imageConfig)
+        buttonConfig.image = image
+        buttonConfig.baseBackgroundColor = .bubbleGreen
+        buttonConfig.baseForegroundColor = .whatsAppBlack
+        buttonConfig.imagePadding = 5
+        buttonConfig.cornerStyle = .capsule
+        
+        let font = UIFont.systemFont(ofSize: 12, weight: .black)
+        buttonConfig.attributedTitle = AttributedString("Older Messages", attributes: AttributeContainer([NSAttributedString.Key.font: font]))
+        
+        let button = UIButton(configuration: buttonConfig)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.alpha = 0
+        return button
+    }()
+    
     // MARK: Methods
     private func setUpViews() {
         view.addSubview(backgroundImageView)
-        view.addSubview(tableView)
+        view.addSubview(messagesCollectionView)
+        view.addSubview(pullDownHUDView)
         
         NSLayoutConstraint.activate([
             backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -70,13 +113,14 @@ final class MessageListController: UIViewController {
             backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             
-            tableView.topAnchor.constraint(equalTo: view.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            messagesCollectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            messagesCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            messagesCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            messagesCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            pullDownHUDView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            pullDownHUDView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
-        
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
     }
     
     private func setUpMessageListners() {
@@ -84,63 +128,57 @@ final class MessageListController: UIViewController {
         viewModel.$messages
             .debounce(for: .milliseconds(delay), scheduler: DispatchQueue.main)
             .sink {[weak self] _ in
-                self?.tableView.reloadData()
+                self?.messagesCollectionView.reloadData()
             }.store(in: &subscriptions)
         
         viewModel.$scrollToBottomRequest
             .debounce(for: .milliseconds(delay), scheduler: DispatchQueue.main)
             .sink {[weak self] scrollRequest in
                 if scrollRequest.scroll {
-                    self?.tableView.scrollToLastRow(at: .bottom, animated: scrollRequest.isAnimated)
+                    self?.messagesCollectionView.scrollToLastRow(at: .bottom, animated: scrollRequest.isAnimated)
                 }
             }.store(in: &subscriptions)
+        
+        viewModel.$isPaginating
+            .debounce(for: .milliseconds(delay), scheduler: DispatchQueue.main)
+            .sink {[weak self] isPaginating in
+                guard let self = self, let lastScrollPosition else { return }
+                if isPaginating == false {
+                    guard let index = viewModel.messages.firstIndex(where: { $0.id == lastScrollPosition}) else { return }
+                    let indexPath = IndexPath(item: index, section: 0)
+                    self.messagesCollectionView.scrollToItem(at: indexPath, at: .top, animated: false)
+                    self.pullToRefresh.endRefreshing()
+                }
+            }.store(in: &subscriptions)
+    }
+    
+    @objc private func refreshData() {
+        lastScrollPosition = viewModel.messages.first?.id
+        messagesCollectionView.refreshControl?.endRefreshing()
+        viewModel.paginateMoreMessages()
     }
 }
 
 // MARK: UITableViewDelegate & UITableViewDataSource
-extension MessageListController: UITableViewDelegate, UITableViewDataSource {
+extension MessageListController: UICollectionViewDelegate, UICollectionViewDataSource {
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath)
         cell.backgroundColor = .clear
-        cell.selectionStyle = .none
         let message = viewModel.messages[indexPath.row]
-        
+        let isNewDay = viewModel.isNewDay(for: message, at: indexPath.item)
+        let showSenderName = viewModel.showSenderName(for: message, at: indexPath.item)
         cell.contentConfiguration = UIHostingConfiguration {
-            switch message.type {
-            case .text:
-                BubbleTextView(item: message)
-            case .video, .photo:
-                BubbleImageView(item: message)
-            case .audio:
-                BubbleAudioView(item: message)
-            case .admin(let adminType):
-                switch adminType {
-                case .channelCreation:
-                    ChannelCreationTextView()
-                    
-                    if viewModel.channel.isGroupChat {
-                        AdminMessageTextView(channel: viewModel.channel)
-                    }
-
-                default:
-                    Text("UNKNOW")
-               
-                }
-            }
+            BubbleView(message: message, channel: viewModel.channel, isNewDay: isNewDay, showSenderName: showSenderName)
         }
         return cell
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return viewModel.messages.count
     }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         UIApplication.dismissKeyboard()
         let messageItem = viewModel.messages[indexPath.row]
         switch messageItem.type {
@@ -152,26 +190,30 @@ extension MessageListController: UITableViewDelegate, UITableViewDataSource {
                         
             viewModel.showMediaPlayer(videoURL)
             
-        case .audio:
-            guard let audioURLString = messageItem.audioURL,
-                  let audioURL = URL(string: audioURLString)
-            else { return }
-            viewModel.showMediaPlayer(audioURL)
-            
         default:
             break
         }
     }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.y <= 0{
+            pullDownHUDView.alpha = viewModel.isPaginatable ? 1 : 0
+        }
+        else {
+            pullDownHUDView.alpha = 0
+        }
+    }
+    
 }
 
-private extension UITableView {
-    func scrollToLastRow(at scrollPosition: UITableView.ScrollPosition, animated: Bool) {
-        guard numberOfRows(inSection: numberOfSections - 1) > 0 else { return }
+private extension UICollectionView {
+    func scrollToLastRow(at scrollPosition: UICollectionView.ScrollPosition, animated: Bool) {
+        guard numberOfItems(inSection: numberOfSections - 1) > 0 else { return }
         
         let lastSectionIndex = numberOfSections - 1
-        let lastRowIndex = numberOfRows(inSection: lastSectionIndex) - 1
+        let lastRowIndex = numberOfItems(inSection: lastSectionIndex) - 1
         let lastRowIndexPath = IndexPath(row: lastRowIndex, section: lastSectionIndex)
-        scrollToRow(at: lastRowIndexPath, at: scrollPosition, animated: animated)
+        scrollToItem(at: lastRowIndexPath, at: scrollPosition, animated: animated)
     }
 }
 

@@ -1,5 +1,5 @@
 {
-  "originHash" : "dacfd17cdf8fa9f962991925a9162eb62e278dab4974c56cd997ab2b87892aa5",
+  "originHash" : "ec1848c9610d677c1675d5340ff71aeb4d7ba1da2cfe373e43719beb65a61226",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "748c7837511d0e6a507737353af268484e1745e2",
         "version" : "1.2024011601.1"
+      }
+    },
+    {
+      "identity" : "alertkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sparrowcode/AlertKit",
+      "state" : {
+        "revision" : "3b73be8db5a7e7efaf474c6ed919f5a437d843c9",
+        "version" : "5.1.9"
       }
     },
     {
@@ -116,6 +125,24 @@
       "state" : {
         "revision" : "540318ecedd63d883069ae7f1ed811a2df00b6ac",
         "version" : "2.4.0"
+      }
+    },
+    {
+      "identity" : "stream-video-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/GetStream/stream-video-swift",
+      "state" : {
+        "revision" : "5bb5c45d001308f77e3d456a12e0b7793d96b1a7",
+        "version" : "1.14.1"
+      }
+    },
+    {
+      "identity" : "stream-video-swift-webrtc",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/GetStream/stream-video-swift-webrtc.git",
+      "state" : {
+        "revision" : "2f7e07b4de39aeb65f3fdc83e4fdbefe5d7d5292",
+        "version" : "114.5735.8"
       }
     },
     {
