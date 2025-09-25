@@ -25,7 +25,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true/>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:676670562480:ios:54b3ecd77c9eae73975b75</string>
+	<string>"google app id"</string>
 	<key>NSMicrophoneUsageDescription</key>
     	<string>We need access to the microphone to record audio messages.</string>
 </dict>
