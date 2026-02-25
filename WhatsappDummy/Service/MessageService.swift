@@ -143,8 +143,9 @@ struct MessageService {
             .queryLimited(toFirst: 1)
             .observeSingleEvent(of: .value) { snapshot in
                 guard let dictionary = snapshot.value as? [String: Any] else { return }
+                // Fix: was using snapshot.value (outer dict) as messageDict instead of per-message value
                 dictionary.forEach { key, value in
-                    guard let messageDict = snapshot.value as? [String: Any] else { return }
+                    guard let messageDict = value as? [String: Any] else { return }
                     var firstMessage = MessageItem(id: key, isGroupChat: channel.isGroupChat, dict: messageDict)
                     let messageSender = channel.members.first(where: {$0.uid == firstMessage.ownerUid })
                     firstMessage.sender = messageSender

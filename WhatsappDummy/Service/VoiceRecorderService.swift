@@ -85,7 +85,8 @@ final class VoiceRecorderService {
         if isRecording { stopRecording() }
         let fileManager = FileManager.default
         let folder = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let folderContents = try! fileManager.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil)
+        // Fix: was try! (crash if directory read fails), now safe try?
+        let folderContents = (try? fileManager.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil)) ?? []
         deleteRecordings(folderContents)
         print("VoiceRecorderService: was successfully teared down")
     }

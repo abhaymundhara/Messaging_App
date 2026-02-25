@@ -63,7 +63,7 @@ extension Date {
     }
     
     private var isCurrentWeek: Bool {
-        return Calendar.current.isDate(self, equalTo: Date(), toGranularity: .weekday)
+        return Calendar.current.isDate(self, equalTo: Date(), toGranularity: .weekOfYear)
     }
     
     private var isCurrentYear: Bool {

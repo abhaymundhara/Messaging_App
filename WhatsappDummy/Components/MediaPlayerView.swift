@@ -37,7 +37,7 @@ struct MediaPlayerView: View {
                 .clipShape(Circle())
                 .shadow(radius: 5)
                 .padding(2)
-                .bold()
+                // Fix: removed .bold() - it's a Text modifier, has no effect on Image
         }
     }
 }
