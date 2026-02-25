@@ -7,6 +7,7 @@
 
 import SwiftUI
 import PhotosUI
+import FirebaseAuth
 import StreamVideo
 import StreamVideoSwiftUI
 
@@ -19,8 +20,7 @@ struct ChatRoomScreen: View {
         self.channel = channel
         _viewModel = StateObject(wrappedValue: ChatRoomViewModel(channel))
     }
-    
-    
+
     var body: some View {
         MessageListView(viewModel)
             .toolbar(.hidden, for: .tabBar)
@@ -50,10 +50,9 @@ struct ChatRoomScreen: View {
             }
             .environmentObject(voiceMessagePlayer)
     }
-    
+
     private func bottomSafeAreaView() -> some View {
         VStack(spacing: 0) {
-            
             Divider()
             if viewModel.showPhotoPickerPreview {
                 MediaAttachmentPreview(mediaAttachments: viewModel.mediaAttachments) { action in
@@ -61,11 +60,11 @@ struct ChatRoomScreen: View {
                 }
                 Divider()
             }
-
             TextInputArea(
                 textMessage: $viewModel.textMessage,
                 isRecording: $viewModel.isRecodingVoiceMessage,
-                elapsedTime: $viewModel.elapsedVoiceMessageTime, disableSendButton: viewModel.disableSendButton) { action in
+                elapsedTime: $viewModel.elapsedVoiceMessageTime,
+                disableSendButton: viewModel.disableSendButton) { action in
                     viewModel.handleTextInputArea(action)
                 }
         }
@@ -74,26 +73,25 @@ struct ChatRoomScreen: View {
 
 // MARK: Toolbar Items
 extension ChatRoomScreen {
-    
+
     private var channelTitle: String {
         let maxChar = 20
         let trailingChars = channel.title.count > maxChar ? "..." : ""
         let title = String(channel.title.prefix(maxChar) + trailingChars)
         return title
     }
-    
+
     @ToolbarContentBuilder
     private func leadingNavItems() -> some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
             HStack {
                 CircularProfileImageView(channel, size: .mini)
-                
                 Text(channelTitle)
                     .bold()
             }
         }
     }
-    
+
     @ToolbarContentBuilder
     private func trailingNavItems() -> some ToolbarContent {
         ToolbarItemGroup(placement: .topBarTrailing) {
@@ -102,21 +100,22 @@ extension ChatRoomScreen {
             } label: {
                 Image(systemName: "video")
             }
-            
+
             Button {
-                
+
             } label: {
                 Image(systemName: "phone")
             }
         }
     }
-    
+
     private func startVideoCall() {
         guard callViewModel.call == nil else { return }
-        let user = User(id: "Qui-Gon_Jinn", name: "Abhay")
-        let callMembers = channel.membersExcludingMe
-        callViewModel.joinCall(callType: .default, callId: "sTmUDIFLN9hL")
-//        callViewModel.startCall(callType: .default, callId: "sTmUDIFLN9hL", members:  )
+        // Fix B22: was using hardcoded callId "sTmUDIFLN9hL" and hardcoded user "Qui-Gon_Jinn"
+        // Now uses the channel ID as the call ID (unique per conversation) and
+        // the authenticated user's real UID so Stream routes the call correctly.
+        let callId = channel.id
+        callViewModel.joinCall(callType: .default, callId: callId)
     }
 }
 

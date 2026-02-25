@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import FirebaseAuth
 import FirebaseDatabase
+import FirebaseFunctions
 import StreamVideo
 
 enum AuthState {
@@ -44,17 +45,17 @@ extension AuthError: LocalizedError {
 }
 
 final class AuthManager: AuthProvider {
-    
+
     private init() {
         Task { await autoLogin() }
     }
-    
+
     static let shared: AuthProvider = AuthManager()
-    
+
     var authState = CurrentValueSubject<AuthState, Never>(.pending)
-    
+
     @Published var streamVideo: StreamVideo?
-    
+
     func autoLogin() async {
         if Auth.auth().currentUser == nil {
             authState.send(.loggedOut)
@@ -64,7 +65,7 @@ final class AuthManager: AuthProvider {
             }
         }
     }
-    
+
     func login(with email: String, and password: String) async throws {
         do {
             let authResult = try await Auth.auth().signIn(withEmail: email, password: password)
@@ -77,7 +78,7 @@ final class AuthManager: AuthProvider {
             throw AuthError.emailLoginFailed(error.localizedDescription)
         }
     }
-    
+
     func createAccount(for username: String, with email: String, and password: String) async throws {
         do {
             let authResult = try await Auth.auth().createUser(withEmail: email, password: password)
@@ -90,7 +91,7 @@ final class AuthManager: AuthProvider {
             throw AuthError.accountCreationFailed(error.localizedDescription)
         }
     }
-    
+
     func logOut() async throws {
         do {
             try Auth.auth().signOut()
@@ -112,11 +113,10 @@ extension AuthManager {
             throw AuthError.failedToSaveUserInfo(error.localizedDescription)
         }
     }
-    
+
     private func fetchCurrentUserInfo(completion: @escaping(UserItem) -> Void) {
         guard let currentUid = Auth.auth().currentUser?.uid else { return }
         FirebaseConstants.UserRef.child(currentUid).observe(.value) {[weak self] snapshot in
-            
             guard let userDict = snapshot.value as? [String: Any] else { return }
             let loggedInUser = UserItem(dictionary: userDict)
             completion(loggedInUser)
@@ -126,24 +126,47 @@ extension AuthManager {
             print("Failed to get current user info")
         }
     }
-    
+
     private func setUp(_ currentUser: UserItem) {
-        setUpStreamVideo(for: currentUser)
+        Task { await setUpStreamVideo(for: currentUser) }
         authState.send(.loggedIn(currentUser))
     }
 }
 
 extension AuthManager {
-    private func setUpStreamVideo(for currentUser: UserItem) {
-        let apiKey = "nsxx7y5rb3kq"
-        let token = UserToken(rawValue:  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3Byb250by5nZXRzdHJlYW0uaW8iLCJzdWIiOiJ1c2VyL1F1aS1Hb25fSmlubiIsInVzZXJfaWQiOiJRdWktR29uX0ppbm4iLCJ2YWxpZGl0eV9pbl9zZWNvbmRzIjo2MDQ4MDAsImlhdCI6MTczMTY0OTYwNCwiZXhwIjoxNzMyMjU0NDA0fQ.SjTP_SqDch3XBtsJKJ4xPCwdh5chkpvk5OIlNDIQTNA")
-        let user = User(id: "Qui-Gon_Jinn", name: "Abhay")
-        
-        streamVideo = StreamVideo(apiKey: apiKey, user: user, token: token)
+    // Fix B11 + B21: removed hardcoded API key, JWT token, and Qui-Gon_Jinn user.
+    // Now calls the getStreamUserToken Cloud Function and uses the real logged-in user.
+    private func setUpStreamVideo(for currentUser: UserItem) async {
+        guard let apiKey = Bundle.main.object(forInfoDictionaryKey: "STREAM_API_KEY") as? String,
+              !apiKey.isEmpty else {
+            print("⚠️ STREAM_API_KEY missing from Info.plist")
+            return
+        }
+
+        do {
+            let functions = Functions.functions()
+            let result = try await functions.httpsCallable("getStreamUserToken").call()
+            guard let rawToken = result.data as? String else {
+                print("⚠️ Failed to parse Stream token from Cloud Function")
+                return
+            }
+
+            let token = UserToken(rawValue: rawToken)
+            // Use the actual logged-in user, not a hardcoded placeholder
+            let streamUser = User(
+                id: currentUser.uid,
+                name: currentUser.username,
+                imageURL: currentUser.profileImageUrl.flatMap { URL(string: $0) }
+            )
+
+            await MainActor.run {
+                streamVideo = StreamVideo(apiKey: apiKey, user: streamUser, token: token)
+            }
+        } catch {
+            print("⚠️ Failed to get Stream token: \(error.localizedDescription)")
+        }
     }
 }
-
-
 
 extension AuthManager {
     static let testAccounts: [String] = [
@@ -169,4 +192,3 @@ extension AuthManager {
     "User20@gmail.com"
     ]
 }
-
