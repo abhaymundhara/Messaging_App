@@ -65,10 +65,12 @@ final class ChannelTabViewModel: ObservableObject {
                 self.getChannelMembers(channel) { members in
                     channel.members = members
                     channel.unreadCount = unreadCount
-                    channel.members.append(self.currentUser)
+                    // Fix: only append currentUser if not already in members (was duplicating on every listener fire)
+                    if !channel.members.contains(where: { $0.uid == self.currentUser.uid }) {
+                        channel.members.append(self.currentUser)
+                    }
                     self.channelDictionary[channelId] = channel
                     self.reloadData()
-                    //                self?.channels.append(channel)
                     print("channel members fetched from db: \(channel.members.map {$0.username})")
                 }
             }

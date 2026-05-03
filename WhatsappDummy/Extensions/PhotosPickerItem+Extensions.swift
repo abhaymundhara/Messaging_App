@@ -11,8 +11,8 @@ import SwiftUI
 
 extension PhotosPickerItem {
     var isVideo: Bool {
+        // Fix: removed UTType.avi which doesn't exist in UniformTypeIdentifiers
         let videoUTTypes: [UTType] = [
-            .avi,
             .video,
             .mpeg2Video,
             .mpeg4Movie,

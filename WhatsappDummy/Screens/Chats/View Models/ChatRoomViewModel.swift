@@ -87,8 +87,9 @@ final class ChatRoomViewModel: ObservableObject {
     func sendMessage() {
         if mediaAttachments.isEmpty {
             sendTextMessage(textMessage)
-            }
-         else {
+            // Fix: clearTextInputArea was missing for text-only path (text field stayed populated)
+            clearTextInputArea()
+        } else {
             sendMultipleMediaMessages(textMessage, attachments: mediaAttachments)
             clearTextInputArea()
         }
@@ -189,9 +190,7 @@ final class ChatRoomViewModel: ObservableObject {
                     
                 }
             
-            if !text.isEmptyOrWhiteSpace {
-                self.sendTextMessage(text)
-            }
+            // Fix: removed duplicate sendTextMessage call (text is already included in the voice message params via MessageUploadParams.text)
         }
     }
     

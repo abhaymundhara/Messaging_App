@@ -58,9 +58,12 @@ struct MessageItem: Identifiable {
     private let horizontalPadding: CGFloat = 25
     
     var imageSize: CGSize {
-        let photoWidth = thumbnailWidth ?? 0
-        let photoHeight = thumbnailHeight ?? 0
-        let imageHeight = CGFloat(photoHeight / photoWidth * imageWidth)
+        // Fix: was dividing by zero when thumbnailWidth is nil/0 -> crash
+        guard let photoWidth = thumbnailWidth, photoWidth > 0,
+              let photoHeight = thumbnailHeight else {
+            return CGSize(width: imageWidth, height: imageWidth) // square placeholder
+        }
+        let imageHeight = CGFloat(photoHeight / photoWidth) * imageWidth
         return CGSize(width: imageWidth, height: imageHeight)
     }
     

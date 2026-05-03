@@ -10,16 +10,16 @@ import SwiftUI
 struct ChannelTabScreen: View {
     @State private var searchText = ""
     @StateObject private var viewModel: ChannelTabViewModel
-    
+
     init(_ currentUser: UserItem) {
         self._viewModel = StateObject(wrappedValue: ChannelTabViewModel(currentUser))
     }
-    
+
     var body: some View {
         NavigationStack(path: $viewModel.navRoutes) {
             List {
                 archivedButton()
-                
+
                 ForEach(viewModel.channels) { channel in
                     Button {
                         viewModel.navRoutes.append(.chatRoom(channel))
@@ -27,7 +27,7 @@ struct ChannelTabScreen: View {
                         ChannelItemView(channel: channel)
                     }
                 }
-                
+
                 inboxFooterView()
                     .listRowSeparator(.hidden)
             }
@@ -54,7 +54,7 @@ struct ChannelTabScreen: View {
 }
 
 extension ChannelTabScreen {
-    
+
     @ViewBuilder
     private func destinationView(for route: ChannelTabRoutes) -> some View {
         switch route {
@@ -62,14 +62,13 @@ extension ChannelTabScreen {
             ChatRoomScreen(channel: channel)
         }
     }
-    
-    
+
     @ToolbarContentBuilder
     private func leadingNavItems() -> some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
             Menu {
                 Button {
-                    
+
                 } label: {
                     Label("Select Chats", systemImage: "checkmark.circle")
                 }
@@ -78,7 +77,7 @@ extension ChannelTabScreen {
             }
         }
     }
-    
+
     @ToolbarContentBuilder
     private func trailingNavItems() -> some ToolbarContent {
         ToolbarItemGroup(placement: .topBarTrailing) {
@@ -87,15 +86,17 @@ extension ChannelTabScreen {
             newChatButton()
         }
     }
-    
+
     private func aiButton() -> some View {
         Button {
-            
+
         } label: {
-            Image(.circle)
+            // Fix B18: Image(.circle) is invalid — .circle is not a named image asset
+            // Replaced with Image(systemName: "circle") which is the correct SF Symbol initialiser
+            Image(systemName: "circle")
         }
     }
-    
+
     private func newChatButton() -> some View {
         Button {
             viewModel.showChatPartnerPickerView = true
@@ -103,19 +104,18 @@ extension ChannelTabScreen {
             Image(.plus)
         }
     }
-    
+
     private func cameraButton() -> some View {
         Button {
-            
+
         } label: {
             Image(systemName: "camera")
         }
     }
-    
-    
+
     private func archivedButton() -> some View {
         Button {
-            
+
         } label: {
             Label("Archived", systemImage: "archivebox.fill")
                 .bold()
@@ -123,11 +123,11 @@ extension ChannelTabScreen {
                 .foregroundStyle(.gray)
         }
     }
-    
+
     private func inboxFooterView() -> some View {
         HStack {
             Image(systemName: "lock.fill")
-            
+
             (
                 Text("Your personal messages are ")
                 +
